@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "found_items")
 public class FoundItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +26,6 @@ public class FoundItem {
     @Column(name = "found_date")
     private LocalDate foundDate;
 
-    @Lob
     @Column(name = "feature")
     private String feature;
 

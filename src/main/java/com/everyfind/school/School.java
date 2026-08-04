@@ -3,6 +3,7 @@ package com.everyfind.school;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "schools")
 public class School {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

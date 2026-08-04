@@ -1,0 +1,8 @@
+POST http://localhost:8080/members
+Content-Type: application/json
+
+{
+  "name": "이유리",
+  "email": "test5@pusan.ac.kr",
+  "password": "5687"
+}
