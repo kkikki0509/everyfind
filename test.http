@@ -1,8 +1,7 @@
-POST http://localhost:8080/members
+POST http://localhost:8080/members/email/verify
 Content-Type: application/json
 
 {
-  "name": "이유리",
-  "email": "test5@pusan.ac.kr",
-  "password": "5687"
+  "email": "test7@pusan.ac.kr",
+  "code": "233504"
 }

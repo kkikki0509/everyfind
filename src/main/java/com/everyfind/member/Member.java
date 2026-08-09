@@ -58,4 +58,8 @@ public class Member {
     public School getSchool() {
         return school;
     }
+
+    public void verifyEmail() {
+        this.emailVerified = true;
+    }
 }
