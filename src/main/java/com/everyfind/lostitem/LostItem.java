@@ -85,4 +85,14 @@ public class LostItem {
     public Member getMember() {
         return member;
     }
+
+    // 수정
+    public void updateLostItem(String title, String category, String lostPlace,
+                       String feature, LocalDate lostDate) {
+        this.title = title;
+        this.category = category;
+        this.lostPlace = lostPlace;
+        this.feature = feature;
+        this.lostDate = lostDate;
+    }
 }
