@@ -1,3 +1,4 @@
-DELETE http://localhost:8080/lost/items/2?memberId=5
+DELETE http://localhost:8080/found/items/1?memberId=3
 Content-Type: application/json
+
 

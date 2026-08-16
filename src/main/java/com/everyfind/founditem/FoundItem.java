@@ -80,4 +80,13 @@ public class FoundItem {
     public Member getMember() {
         return member;
     }
+
+    public void updateFoundItem(String title, String category, String foundPlace, String feature,
+                                LocalDate foundDate) {
+        this.title = title;
+        this.category = category;
+        this.foundPlace = foundPlace;
+        this.feature = feature;
+        this.foundDate = foundDate;
+    }
 }
