@@ -1,12 +1,8 @@
-POST http://localhost:8080/lost/items?memberId=1
+POST http://localhost:8080/members
 Content-Type: application/json
 
 {
-  "title": "검은색 지갑",
-  "category": "지갑",
-  "lostPlace": "학생회관",
-  "feature": "검은색 가죽 지갑, 카드 여러 장 들어있음",
-  "lostDate": "2026-08-16"
+  "name": "테스트",
+  "email": "실제DB에있는학교도메인@...",
+  "password": "1234"
 }
-
-

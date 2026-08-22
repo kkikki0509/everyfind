@@ -20,9 +20,6 @@ public class Member {
     @Column(name = "member_pw")
     private String password;
 
-    @Column(name = "email_verified")
-    private boolean emailVerified = false;
-
     @ManyToOne
     @JoinColumn(name = "school_id")
     private School school;
@@ -51,15 +48,7 @@ public class Member {
         return password;
     }
 
-    public boolean isEmailVerified(){
-        return emailVerified;
-    }
-
     public School getSchool() {
         return school;
-    }
-
-    public void verifyEmail() {
-        this.emailVerified = true;
     }
 }

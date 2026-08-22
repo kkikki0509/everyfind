@@ -10,6 +10,7 @@ import java.util.Set;
 @Service
 public class EmailService {
     private final Map<String, String> verificationCodes = new HashMap<>();
+    private final Set<String> verifiedEmails = new HashSet<>();
 
     public void sendVerificationEmail(String email, String code) {
         verificationCodes.put(email, code);
@@ -25,7 +26,13 @@ public class EmailService {
     }
 
     public boolean verifyCode(String email, String code) {
-        return code.equals(verificationCodes.get(email));
-    }
+        if (!code.equals(verificationCodes.get(email))) {
+            return false;
+        }
 
+        verifiedEmails.add(email);
+        verificationCodes.remove(email);
+
+        return true;
+    }
 }

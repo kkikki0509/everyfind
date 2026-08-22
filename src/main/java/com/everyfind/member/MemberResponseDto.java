@@ -12,7 +12,6 @@ public class MemberResponseDto {
         this.id = member.getId();
         this.name = member.getName();
         this.email = member.getEmail();
-        this.emailVerified = member.isEmailVerified();
         this.schoolName = member.getSchool().getName();
     }
 

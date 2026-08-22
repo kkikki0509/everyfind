@@ -49,7 +49,7 @@ public class LostItemService {
     }
 
     // 분실물 내용 수정
-    public LostItem updateLostItem(Long lostId, Long memberId, LostItemRequestDto requestDto) {
+    public LostItem updateLostItem(Long lostId, String email, LostItemRequestDto requestDto) {
         Optional<LostItem> optlostItem = lostItemRepository.findById(lostId);
         LostItem lostItem= null;
 
@@ -60,7 +60,17 @@ public class LostItemService {
             throw new NoSuchElementException("존재하지 않는 분실물입니다.");
         }
 
-        if (!lostItem.getMember().getId().equals(memberId)) {
+        Optional<Member> optMember = memberRepository.findByEmail(email);
+        Member member = null;
+
+        try {
+            member = optMember.get();
+        }
+        catch (NoSuchElementException e) {
+            throw new NoSuchElementException("존재하지 않는 회원입니다.");
+        }
+
+        if (!lostItem.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("자신이 등록한 게시물만 수정할 수 있습니다.");
         }
 
@@ -91,7 +101,7 @@ public class LostItemService {
     }
 
     // 분실물 삭제
-    public void deleteLostItem(Long lostId, Long memberId) {
+    public void deleteLostItem(Long lostId, String email) {
         Optional<LostItem> optLostItem = lostItemRepository.findById(lostId);
         LostItem lostItem = null;
 
@@ -102,7 +112,17 @@ public class LostItemService {
             throw new NoSuchElementException("존재하지 않는 분실물입니다.");
         }
 
-        if (!lostItem.getMember().getId().equals(memberId)) {
+        Optional<Member> optMember = memberRepository.findByEmail(email);
+        Member member = null;
+
+        try {
+            member = optMember.get();
+        }
+        catch (NoSuchElementException e) {
+            throw new NoSuchElementException("존재하지 않는 회원입니다.");
+        }
+
+        if (!lostItem.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("자신이 등록한 게시물만 삭제할 수 있습니다.");
         }
 

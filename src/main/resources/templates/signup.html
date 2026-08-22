@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<h1>회원가입</h1>
+
+<!-- 회원가입 정보 -->
+<input id="name" placeholder="이름">
+<input id="email" type="email" placeholder="학교 이메일">
+<input id="password" type="password" placeholder="비밀번호">
+
+<br><br>
+
+<!-- 이메일 인증 -->
+<button id="sendCode">인증번호 요청</button>
+
+<br><br>
+
+<input id="code" placeholder="인증번호">
+<button id="verifyCode">인증 확인</button>
+
+<input type="hidden" id="csrf" th:value="${_csrf.token}">
+
+<script>
+    // 인증번호 요청
+    document.getElementById("sendCode").addEventListener("click", async function() {
+
+        const email = document.getElementById("email").value;
+
+        const response = await fetch("/members/email", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.getElementById("csrf").value
+            },
+            body: JSON.stringify({
+                email: email
+            })
+        });
+
+        if (response.ok) {
+            alert("인증번호가 발송되었습니다.");
+        } else {
+            alert("인증번호 발송 실패: " + response.status);
+        }
+
+    });
+
+    // 인증번호 확인
+    document.getElementById("verifyCode").addEventListener("click", async function() {
+
+        const email = document.getElementById("email").value;
+        const code = document.getElementById("code").value;
+
+        const response = await fetch("/members/email/verify", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.getElementById("csrf").value
+            },
+            body: JSON.stringify({
+                email: email,
+                code: code
+            })
+        });
+
+        if (response.ok) {
+            alert("이메일 인증 성공!");
+
+            // 회원가입 요청
+            const signupResponse = await fetch("/members", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.getElementById("csrf").value
+                },
+                body: JSON.stringify({
+                    name: document.getElementById("name").value,
+                    email: email,
+                    password: document.getElementById("password").value
+                })
+            });
+
+            if (signupResponse.ok) {
+                alert("회원가입 성공!");
+                location.href = "/members/login";
+            }
+            else {
+                const error = await signupResponse.text();
+                console.log(error);
+                alert("회원가입 실패: " + signupResponse.status);
+            }
+        }
+        else {
+            alert("인증번호가 틀렸습니다.");
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

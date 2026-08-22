@@ -6,6 +6,14 @@
         <h1>분실물 등록 테스트</h1>
 
         <form id="form">
+            <hr>
+
+            <h2>수정 / 삭제 테스트</h2>
+
+            <input id="lostId" type="number" placeholder="게시물 ID">
+
+            <button type="button" id="updateButton">수정</button>
+            <button type="button" id="deleteButton">삭제</button>
 
             <input id="title" placeholder="제목">
             <input id="category" placeholder="카테고리">
@@ -22,7 +30,7 @@
         <script>
             document.getElementById("form").addEventListener("submit", async function(e) {
 
-                e.preventDefault();
+                e.preventDefault(); // 페이지 새로고침 무시
 
                 const response = await fetch("/lost/items", {
                     method: "POST",
@@ -44,6 +52,51 @@
                     console.log(await response.json());
                 } else {
                     alert("등록 실패: " + response.status);
+                }
+            });
+
+            document.getElementById("updateButton").addEventListener("click", async function() {
+
+                const lostId = document.getElementById("lostId").value;
+
+                const response = await fetch("/lost/items/" + lostId, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.getElementById("csrf").value
+                    },
+                    body: JSON.stringify({
+                        title: document.getElementById("title").value,
+                        category: document.getElementById("category").value,
+                        lostPlace: document.getElementById("lostPlace").value,
+                        feature: document.getElementById("feature").value,
+                        lostDate: document.getElementById("lostDate").value
+                    })
+                });
+
+                if (response.ok) {
+                    alert("수정 성공!");
+                } else {
+                    alert("수정 실패: " + response.status);
+                }
+            });
+
+
+            document.getElementById("deleteButton").addEventListener("click", async function() {
+
+                const lostId = document.getElementById("lostId").value;
+
+                const response = await fetch("/lost/items/" + lostId, {
+                    method: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": document.getElementById("csrf").value
+                    }
+                });
+
+                if (response.ok) {
+                    alert("삭제 성공!");
+                } else {
+                    alert("삭제 실패: " + response.status);
                 }
             });
         </script>

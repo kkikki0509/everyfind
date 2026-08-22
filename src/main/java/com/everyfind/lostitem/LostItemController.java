@@ -32,10 +32,10 @@ public class LostItemController {
     }
 
     @PutMapping("/lost/items/{lostId}")
-    public LostItem updateLostItem(@PathVariable Long lostId, @RequestParam Long memberId,
-                                   @RequestBody LostItemRequestDto requestDto) {
+    public LostItem updateLostItem(@PathVariable Long lostId, @RequestBody LostItemRequestDto requestDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        return lostItemService.updateLostItem(lostId, memberId, requestDto);
+        return lostItemService.updateLostItem(lostId, userDetails.getUsername(), requestDto);
     }
 
     @GetMapping("/lost/items/{lostId}")
@@ -44,8 +44,8 @@ public class LostItemController {
     }
 
     @DeleteMapping("/lost/items/{lostId}")
-    public void deleteLostItem(@PathVariable Long lostId, @RequestParam Long memberId) {
-        lostItemService.deleteLostItem(lostId, memberId);
+    public void deleteLostItem(@PathVariable Long lostId, @AuthenticationPrincipal UserDetails userDetails) {
+        lostItemService.deleteLostItem(lostId, userDetails.getUsername());
     }
 
 }

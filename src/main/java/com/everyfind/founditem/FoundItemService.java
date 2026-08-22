@@ -21,8 +21,8 @@ public class FoundItemService {
     }
 
     // 습득물 게시물 생성
-    public FoundItem createFoundItem(FoundItemRequestDto requestDto, Long memberId) {
-        Optional<Member> optMember = memberRepository.findById(memberId);
+    public FoundItem createFoundItem(FoundItemRequestDto requestDto, String email) {
+        Optional<Member> optMember = memberRepository.findByEmail(email);
         Member member = null;
 
         try {
@@ -66,7 +66,7 @@ public class FoundItemService {
     }
 
     // 습득물 수정
-    public FoundItem updateFoundItem(Long foundId, Long memberId, FoundItemRequestDto requestDto) {
+    public FoundItem updateFoundItem(Long foundId, String email, FoundItemRequestDto requestDto) {
 
         Optional<FoundItem> optFoundItem = foundItemRepository.findById(foundId);
         FoundItem foundItem = null;
@@ -78,7 +78,17 @@ public class FoundItemService {
             throw new NoSuchElementException("존재하지 않는 습득물입니다.");
         }
 
-        if (!foundItem.getMember().getId().equals(memberId)) {
+        Optional<Member> optMember = memberRepository.findByEmail(email);
+        Member member = null;
+
+        try {
+            member = optMember.get();
+        }
+        catch (NoSuchElementException e) {
+            throw new NoSuchElementException("존재하지 않는 회원입니다.");
+        }
+
+        if (!foundItem.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("자신이 등록한 게시물만 수정할 수 있습니다.");
         }
 
@@ -94,7 +104,7 @@ public class FoundItemService {
     }
 
     // 습득물 삭제
-    public void deleteFoundItem(Long foundId, Long memberId) {
+    public void deleteFoundItem(Long foundId, String email) {
 
         Optional<FoundItem> optFoundItem = foundItemRepository.findById(foundId);
         FoundItem foundItem = null;
@@ -106,7 +116,17 @@ public class FoundItemService {
             throw new NoSuchElementException("존재하지 않는 습득물입니다.");
         }
 
-        if (!foundItem.getMember().getId().equals(memberId)) {
+        Optional<Member> optMember = memberRepository.findByEmail(email);
+        Member member = null;
+
+        try {
+            member = optMember.get();
+        }
+        catch (NoSuchElementException e) {
+            throw new NoSuchElementException("존재하지 않는 회원입니다.");
+        }
+
+        if (!foundItem.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("자신이 등록한 게시물만 삭제할 수 있습니다.");
         }
 

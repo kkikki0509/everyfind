@@ -87,23 +87,9 @@ public class MemberService {
 
     // 이메일 인증 검증
     public boolean verifyEmail(EmailVerificationRequestDto requestDto) {
-        String email = requestDto.getEmail();
-        Optional<Member> optMember = memberRepository.findByEmail(requestDto.getEmail());
-        Member member = null;
-
         if (!emailService.verifyCode(requestDto.getEmail(), requestDto.getCode())) {
             throw new IllegalArgumentException("인증번호가 틀렸습니다.");
         }
-
-        try{
-            member = optMember.get();
-        }
-        catch(NoSuchElementException e){
-            throw new NoSuchElementException("존재하지 않는 이메일입니다.");
-        }
-
-        member.verifyEmail(); // emailVerified 멤버 속성을 true로 변환
-        memberRepository.save(member);
 
         return true;
     }

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+    <body>
+
+    <h1>습득물 등록 테스트</h1>
+
+    <form id="form">
+        <hr>
+
+        <h2>수정 / 삭제 테스트</h2>
+
+        <input id="foundId" type="number" placeholder="게시물 ID">
+
+        <button type="button" id="updateButton">수정</button>
+        <button type="button" id="deleteButton">삭제</button>
+
+        <input id="title" placeholder="제목">
+        <input id="category" placeholder="카테고리">
+        <input id="foundPlace" placeholder="습득 장소">
+        <input id="feature" placeholder="특징">
+        <input id="foundDate" type="date">
+
+        <button type="submit">등록</button>
+
+    </form>
+
+    <input type="hidden" id="csrf" th:value="${_csrf.token}">
+
+    <script>
+        document.getElementById("form").addEventListener("submit", async function(e) {
+
+            e.preventDefault();
+
+            const response = await fetch("/found/items", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.getElementById("csrf").value
+            },
+            body: JSON.stringify({
+                title: document.getElementById("title").value,
+                category: document.getElementById("category").value,
+                foundPlace: document.getElementById("foundPlace").value,
+                feature: document.getElementById("feature").value,
+                foundDate: document.getElementById("foundDate").value
+            })
+        });
+
+        if (response.ok) {
+            alert("등록 성공!");
+            console.log(await response.json());
+        } else {
+            alert("등록 실패: " + response.status);
+        }
+    });
+
+        document.getElementById("updateButton").addEventListener("click", async function() {
+
+            const foundId = document.getElementById("foundId").value;
+
+            const response = await fetch("/found/items/" + foundId, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.getElementById("csrf").value
+                },
+                body: JSON.stringify({
+                    title: document.getElementById("title").value,
+                    category: document.getElementById("category").value,
+                    foundPlace: document.getElementById("foundPlace").value,
+                    feature: document.getElementById("feature").value,
+                    foundDate: document.getElementById("foundDate").value
+                })
+            });
+
+            if (response.ok) {
+                alert("수정 성공!");
+            } else {
+                alert("수정 실패: " + response.status);
+            }
+        });
+
+
+        document.getElementById("deleteButton").addEventListener("click", async function() {
+
+            const foundId = document.getElementById("foundId").value;
+
+            const response = await fetch("/found/items/" + foundId, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN": document.getElementById("csrf").value
+                }
+            });
+
+            if (response.ok) {
+                alert("삭제 성공!");
+            } else {
+                alert("삭제 실패: " + response.status);
+            }
+        });
+    </script>
+
+    </body>
+</html>
