@@ -20,8 +20,8 @@ public class LostItemService {
     }
 
     // 분실물 게시물 생성
-    public LostItem createLostItem(LostItemRequestDto requestDto, Long memberId) {
-        Optional<Member> optMember = memberRepository.findById(memberId);
+    public LostItem createLostItem(LostItemRequestDto requestDto, String email) {
+        Optional<Member> optMember = memberRepository.findByEmail(email);
         Member member = null;
 
         try{

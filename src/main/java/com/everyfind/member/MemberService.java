@@ -4,7 +4,7 @@ import com.everyfind.email.EmailService;
 import com.everyfind.school.School;
 import com.everyfind.school.SchoolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -14,12 +14,12 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final SchoolRepository schoolRepository;
-    private final BCryptPasswordEncoder encoder;
+    private final PasswordEncoder   encoder;
     private final EmailService emailService;
 
     @Autowired
     public MemberService(MemberRepository memberRepository, SchoolRepository schoolRepository,
-                         BCryptPasswordEncoder encoder, EmailService emailService) {
+                         PasswordEncoder encoder, EmailService emailService) {
         this.memberRepository = memberRepository;
         this.schoolRepository = schoolRepository;
         this.encoder = encoder;
