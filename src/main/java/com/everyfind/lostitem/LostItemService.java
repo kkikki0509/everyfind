@@ -1,5 +1,7 @@
 package com.everyfind.lostitem;
 
+import com.everyfind.match.MatchResult;
+import com.everyfind.match.MatchService;
 import com.everyfind.member.Member;
 import com.everyfind.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +15,18 @@ import java.util.Optional;
 public class LostItemService {
     private final LostItemRepository lostItemRepository;
     private final MemberRepository memberRepository;
+    private final MatchService matchService;
+
     @Autowired
-    public LostItemService(LostItemRepository lostItemRepository, MemberRepository memberRepository) {
+    public LostItemService(LostItemRepository lostItemRepository, MemberRepository memberRepository,
+                           MatchService matchService) {
         this.lostItemRepository = lostItemRepository;
         this.memberRepository = memberRepository;
+        this.matchService = matchService;
     }
 
     // 분실물 게시물 생성
-    public LostItem createLostItem(LostItemRequestDto requestDto, String email) {
+    public LostItemMatchResponseDto createLostItem(LostItemRequestDto requestDto, String email) {
         Optional<Member> optMember = memberRepository.findByEmail(email);
         Member member = null;
 
@@ -40,7 +46,11 @@ public class LostItemService {
                 member
         );
 
-        return lostItemRepository.save(lostItem);
+        LostItem savedLostItem = lostItemRepository.save(lostItem);
+
+        List<MatchResult> matches = matchService.findMatches(savedLostItem.getId());
+
+        return new LostItemMatchResponseDto(savedLostItem, matches);
     }
 
     // 분실물 전체 조회
@@ -58,6 +68,11 @@ public class LostItemService {
         Long schoolId = member.getSchool().getId();
 
         return lostItemRepository.findByMemberSchoolId(schoolId);
+    }
+
+    // 분실물 매칭 후보 조회
+    public List<MatchResult> getMatches(Long lostId) {
+        return matchService.findMatches(lostId);
     }
 
     // 분실물 내용 수정

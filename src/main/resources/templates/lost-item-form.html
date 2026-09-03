@@ -25,6 +25,8 @@
 
         </form>
 
+        <div id="matches"></div>
+
         <input type="hidden" id="csrf" th:value="${_csrf.token}">
 
         <script>
@@ -49,7 +51,23 @@
 
                 if (response.ok) {
                     alert("등록 성공!");
-                    console.log(await response.json());
+                    const data = await response.json();
+                    const matchesDiv = document.getElementById("matches");
+
+                    matchesDiv.innerHTML = "";
+
+                    if (data.matches.length === 0) {
+                        matchesDiv.innerHTML = "<p>일치하는 습득물이 없습니다.</p>";
+                    } else {
+                        data.matches.forEach(match => {
+                            matchesDiv.innerHTML += `
+                                <p>
+                                    ${match.foundItem.title}
+                                    - 일치율: ${match.score}%
+                                </p>
+                            `;
+                        });
+                    }
                 } else {
                     alert("등록 실패: " + response.status);
                 }

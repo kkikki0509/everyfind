@@ -95,4 +95,8 @@ public class LostItem {
         this.feature = feature;
         this.lostDate = lostDate;
     }
+
+    public void markAsFound() {
+        this.currentStatus = "FOUND";
+    }
 }
