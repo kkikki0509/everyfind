@@ -44,8 +44,20 @@ public class LostItemService {
     }
 
     // 분실물 전체 조회
-    public List<LostItem> getLostItems(){
-        return lostItemRepository.findAll();
+    public List<LostItem> getLostItems(String email){
+        Optional<Member> optMember = memberRepository.findByEmail(email);
+        Member member = null;
+
+        try{
+            member = optMember.get();
+        }
+        catch(NoSuchElementException e){
+            throw new NoSuchElementException("존재하지 않는 회원입니다.");
+        }
+
+        Long schoolId = member.getSchool().getId();
+
+        return lostItemRepository.findByMemberSchoolId(schoolId);
     }
 
     // 분실물 내용 수정
@@ -86,7 +98,7 @@ public class LostItemService {
     }
 
     // 분실물 단건 조회
-    public LostItem getLostItem(Long lostId) {
+    public LostItem getLostItem(Long lostId, String email) {
         Optional<LostItem> optLostItem = lostItemRepository.findById(lostId);
         LostItem lostItem = null;
 
@@ -95,6 +107,20 @@ public class LostItemService {
         }
         catch (NoSuchElementException e) {
             throw new NoSuchElementException("존재하지 않는 분실물입니다.");
+        }
+
+        Optional<Member> optMember = memberRepository.findByEmail(email);
+        Member member = null;
+
+        try {
+            member = optMember.get();
+        }
+        catch (NoSuchElementException e) {
+            throw new NoSuchElementException("존재하지 않는 회원입니다.");
+        }
+
+        if (!lostItem.getMember().getSchool().getId().equals(member.getSchool().getId())) {
+            throw new IllegalArgumentException("같은 학교의 분실물만 조회할 수 있습니다.");
         }
 
         return lostItem;

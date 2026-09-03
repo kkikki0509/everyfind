@@ -45,13 +45,24 @@ public class FoundItemService {
     }
 
     // 습득물 전체 조회
-    public List<FoundItem> getFoundItems() {
+    public List<FoundItem> getFoundItems(String email) {
+        Optional<Member> optMember = memberRepository.findByEmail(email);
+        Member member = null;
 
-        return foundItemRepository.findAll();
+        try {
+            member = optMember.get();
+        }
+        catch (NoSuchElementException e) {
+            throw new NoSuchElementException("존재하지 않는 회원입니다.");
+        }
+
+        Long schoolId = member.getSchool().getId();
+
+        return foundItemRepository.findByMemberSchoolId(schoolId);
     }
 
     // 습들물 단건 조회
-    public FoundItem getFoundItem(Long foundId) {
+    public FoundItem getFoundItem(Long foundId, String email) {
         Optional<FoundItem> optFoundItem = foundItemRepository.findById(foundId);
         FoundItem foundItem = null;
 
@@ -60,6 +71,20 @@ public class FoundItemService {
         }
         catch (NoSuchElementException e) {
             throw new NoSuchElementException("존재하지 않는 습득물입니다.");
+        }
+
+        Optional<Member> optMember = memberRepository.findByEmail(email);
+        Member member = null;
+
+        try {
+            member = optMember.get();
+        }
+        catch (NoSuchElementException e) {
+            throw new NoSuchElementException("존재하지 않는 회원입니다.");
+        }
+
+        if (!foundItem.getMember().getSchool().getId().equals(member.getSchool().getId())) {
+            throw new IllegalArgumentException("같은 학교의 습득물만 조회할 수 있습니다.");
         }
 
         return foundItem;

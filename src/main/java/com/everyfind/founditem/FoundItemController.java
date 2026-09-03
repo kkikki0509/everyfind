@@ -13,7 +13,7 @@ public class FoundItemController {
     private final FoundItemService foundItemService;
 
     @Autowired
-    public FoundItemController(FoundItemService foundItemService, MemberRepository memberRepository){
+    public FoundItemController(FoundItemService foundItemService){
         this.foundItemService = foundItemService;
     }
 
@@ -24,13 +24,13 @@ public class FoundItemController {
     }
 
     @GetMapping("/found/items")
-    public List<FoundItem> getFoundItems() {
-        return foundItemService.getFoundItems();
+    public List<FoundItem> getFoundItems(@AuthenticationPrincipal UserDetails userDetails) {
+        return foundItemService.getFoundItems(userDetails.getUsername());
     }
 
     @GetMapping("/found/items/{foundId}")
-    public FoundItem getFoundItem(@PathVariable Long foundId) {
-        return foundItemService.getFoundItem(foundId);
+    public FoundItem getFoundItem(@PathVariable Long foundId, @AuthenticationPrincipal UserDetails userDetails) {
+        return foundItemService.getFoundItem(foundId, userDetails.getUsername());
     }
 
     @PutMapping("/found/items/{foundId}")

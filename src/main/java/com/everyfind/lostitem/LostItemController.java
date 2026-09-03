@@ -27,8 +27,9 @@ public class LostItemController {
     }
 
     @GetMapping("/lost/items")
-    public List<LostItem> getLostItems() {
-        return lostItemService.getLostItems();
+    public List<LostItem> getLostItems(@AuthenticationPrincipal UserDetails userDetails) {
+
+        return lostItemService.getLostItems(userDetails.getUsername());
     }
 
     @PutMapping("/lost/items/{lostId}")
@@ -39,8 +40,8 @@ public class LostItemController {
     }
 
     @GetMapping("/lost/items/{lostId}")
-    public LostItem getLostItem(@PathVariable Long lostId) {
-        return lostItemService.getLostItem(lostId);
+    public LostItem getLostItem(@PathVariable Long lostId, @AuthenticationPrincipal UserDetails userDetails) {
+        return lostItemService.getLostItem(lostId, userDetails.getUsername());
     }
 
     @DeleteMapping("/lost/items/{lostId}")
