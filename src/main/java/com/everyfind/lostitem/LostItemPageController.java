@@ -10,4 +10,9 @@ public class LostItemPageController {
     public String lostItemPage() {
         return "lost-item-form";
     }
+
+    @GetMapping("/lost/items/{lostId}/page")
+    public String lostItemDetailPage() {
+        return "lost-detail";
+    }
 }

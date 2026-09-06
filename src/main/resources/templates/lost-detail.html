@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>분실물 상세</title>
+</head>
+
+<body>
+
+<h1>분실물 상세</h1>
+
+<div id="lostItem">
+    불러오는 중...
+</div>
+
+<hr>
+
+<h2>매칭 후보</h2>
+
+<div id="matches">
+    불러오는 중...
+</div>
+
+<input type="hidden" id="csrf" th:value="${_csrf.token}">
+
+<script>
+
+    // URL에서 lostId 가져오기
+    const path = window.location.pathname;
+    const lostId = path.split("/")[3];
+
+    // 분실물 상세 조회
+    async function loadLostItem() {
+
+        const response = await fetch("/lost/items/" + lostId);
+
+        if (!response.ok) {
+            document.getElementById("lostItem").innerHTML =
+                "<p>분실물을 불러오지 못했습니다.</p>";
+            return;
+        }
+
+        const data = await response.json();
+
+        // =========================
+        // 분실물 정보 출력
+        // =========================
+
+        document.getElementById("lostItem").innerHTML = `
+            <p>제목: ${data.lostItem.title}</p>
+            <p>카테고리: ${data.lostItem.category}</p>
+            <p>분실 장소: ${data.lostItem.lostPlace}</p>
+            <p>특징: ${data.lostItem.feature}</p>
+            <p>분실 날짜: ${data.lostItem.lostDate}</p>
+            <p id="status">상태: ${data.lostItem.currentStatus}</p>
+        `;
+
+
+        // =========================
+        // 매칭 후보 출력
+        // =========================
+
+        const matchesDiv = document.getElementById("matches");
+
+        matchesDiv.innerHTML = "";
+
+        if (data.matches.length === 0) {
+
+            matchesDiv.innerHTML =
+                "<p>일치하는 습득물이 없습니다.</p>";
+
+        } else {
+
+            data.matches.forEach(match => {
+
+                matchesDiv.innerHTML += `
+                    <div>
+                        <p>
+                            습득물: ${match.foundItem.title}
+                        </p>
+
+                        <p>
+                            습득 장소: ${match.foundItem.foundPlace}
+                        </p>
+
+                        <p>
+                            특징: ${match.foundItem.feature}
+                        </p>
+
+                        <p>
+                            일치율: ${match.score}%
+                        </p>
+
+                        <button
+                            type="button"
+                            data-found-id="${match.foundItem.id}">
+                            찾았다
+                        </button>
+
+                        <hr>
+                    </div>
+                `;
+            });
+        }
+
+
+        // =========================
+        // 찾았다 버튼
+        // =========================
+
+        matchesDiv.querySelectorAll("button")
+            .forEach(button => {
+
+                button.addEventListener("click", async function() {
+
+                    const foundId = this.dataset.foundId;
+
+                    const response = await fetch(
+                        "/lost/items/"
+                        + lostId
+                        + "/matches/"
+                        + foundId,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "X-CSRF-TOKEN":
+                                document.getElementById("csrf").value
+                            }
+                        }
+                    );
+
+                    if (response.ok) {
+
+                        alert("분실물을 찾았습니다!");
+
+                        document.getElementById("status").innerText =
+                            "상태: FOUND";
+
+                    } else {
+
+                        alert(
+                            "처리에 실패했습니다: "
+                            + response.status
+                        );
+                    }
+                });
+            });
+    }
+
+    loadLostItem();
+
+</script>
+
+</body>
+</html>

@@ -35,7 +35,7 @@ public class LostItemController {
     }
 
     @GetMapping("/lost/items/{lostId}")
-    public LostItem getLostItem(@PathVariable Long lostId, @AuthenticationPrincipal UserDetails userDetails) {
+    public LostItemMatchResponseDto getLostItem(@PathVariable Long lostId, @AuthenticationPrincipal UserDetails userDetails) {
         return lostItemService.getLostItem(lostId, userDetails.getUsername());
     }
 
@@ -43,4 +43,10 @@ public class LostItemController {
     public void deleteLostItem(@PathVariable Long lostId, @AuthenticationPrincipal UserDetails userDetails) {
         lostItemService.deleteLostItem(lostId, userDetails.getUsername());
     }
+
+    @PostMapping("/lost/items/{lostId}/matches/{foundId}")
+    public void confirmMatch(@PathVariable Long lostId, @PathVariable Long foundId) {
+        lostItemService.confirmMatch(lostId, foundId);
+    }
+
 }

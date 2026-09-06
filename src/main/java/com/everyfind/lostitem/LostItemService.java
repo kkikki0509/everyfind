@@ -75,6 +75,10 @@ public class LostItemService {
         return matchService.findMatches(lostId);
     }
 
+    public void confirmMatch(Long lostId, Long foundId) {
+        matchService.confirmMatch(lostId, foundId);
+    }
+
     // 분실물 내용 수정
     public LostItem updateLostItem(Long lostId, String email, LostItemRequestDto requestDto) {
         Optional<LostItem> optlostItem = lostItemRepository.findById(lostId);
@@ -113,7 +117,7 @@ public class LostItemService {
     }
 
     // 분실물 단건 조회
-    public LostItem getLostItem(Long lostId, String email) {
+    public LostItemMatchResponseDto getLostItem(Long lostId, String email) {
         Optional<LostItem> optLostItem = lostItemRepository.findById(lostId);
         LostItem lostItem = null;
 
@@ -138,7 +142,9 @@ public class LostItemService {
             throw new IllegalArgumentException("같은 학교의 분실물만 조회할 수 있습니다.");
         }
 
-        return lostItem;
+        List<MatchResult> matches = matchService.findMatches(lostId);
+
+        return new LostItemMatchResponseDto(lostItem, matches);
     }
 
     // 분실물 삭제
