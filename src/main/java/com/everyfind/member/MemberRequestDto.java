@@ -13,7 +13,5 @@ public class MemberRequestDto {
         return email;
     }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getPassword() { return password; }
 }

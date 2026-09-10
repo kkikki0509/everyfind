@@ -44,11 +44,7 @@ public class Member {
         return email;
     }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getPassword() { return password; } // 고민
 
-    public School getSchool() {
-        return school;
-    }
+    public School getSchool() { return school;}
 }
