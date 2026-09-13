@@ -1,6 +1,5 @@
 package com.everyfind.member;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,13 +18,6 @@ public class MemberController {
     @PostMapping("/members")
     public MemberResponseDto signUp(@RequestBody MemberRequestDto requestDto) {
         Member member = memberService.createMember(requestDto);
-        return new MemberResponseDto(member);
-    }
-
-    // 로그인
-    @PostMapping("/login")
-    public MemberResponseDto login(@RequestBody LoginRequestDto requestDto) {
-        Member member = memberService.login(requestDto);
         return new MemberResponseDto(member);
     }
 

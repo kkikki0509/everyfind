@@ -3,12 +3,9 @@ package com.everyfind.member;
 import com.everyfind.email.EmailService;
 import com.everyfind.school.School;
 import com.everyfind.school.SchoolRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class MemberService {
@@ -47,20 +44,6 @@ public class MemberService {
 
         // DB 저장
         return memberRepository.save(member);
-    }
-
-    /* 로그인 */
-    public Member login(LoginRequestDto requestDto) {
-        // 가입 이메일 유무
-        Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(() ->
-                new NoSuchElementException("가입되지 않은 이메일입니다."));
-
-        // 비밀번호 검증(입력창 및 DB)
-        if (!encoder.matches(requestDto.getPassword(), member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
-        }
-
-        return member;
     }
 
     /* 이메일 인증 번호 */

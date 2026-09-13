@@ -11,21 +11,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+        // URL 접근 권한
         http.authorizeHttpRequests(auth -> auth
                         .requestMatchers("/members/**", "/error")
                         .permitAll()
                         .anyRequest()
                         .authenticated()
-                ).formLogin(form -> form
+                ).formLogin(form -> form // 로그인 방식 설정
                         .loginPage("/members/login")
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/members/login?success", true)
                         .failureUrl("/members/login?error")
                         .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/members/logout")
-                        .logoutSuccessUrl("/members/login")
                 );
 
         return http.build();
