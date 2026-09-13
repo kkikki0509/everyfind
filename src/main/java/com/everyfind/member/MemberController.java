@@ -25,7 +25,8 @@ public class MemberController {
     // 로그인
     @PostMapping("/login")
     public MemberResponseDto login(@RequestBody LoginRequestDto requestDto) {
-        return memberService.login(requestDto);
+        Member member = memberService.login(requestDto);
+        return new MemberResponseDto(member);
     }
 
     // 이메일 인증
