@@ -17,7 +17,6 @@ public class MemberService {
     private final PasswordEncoder encoder;
     private final EmailService emailService;
 
-    @Autowired
     public MemberService(MemberRepository memberRepository, SchoolRepository schoolRepository,
                          PasswordEncoder encoder, EmailService emailService) {
         this.memberRepository = memberRepository;
@@ -51,7 +50,7 @@ public class MemberService {
     }
 
     /* 로그인 */
-    public Member login(LoginRequestDto requestDto) {
+    public MemberResponseDto login(LoginRequestDto requestDto) {
         // 가입 이메일 유무
         Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(() ->
                 new NoSuchElementException("가입되지 않은 이메일입니다."));
@@ -61,7 +60,7 @@ public class MemberService {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
         }
 
-        return member;
+        return new MemberResponseDto(member);
     }
 
     /* 이메일 인증 번호 */

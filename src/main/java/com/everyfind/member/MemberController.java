@@ -2,8 +2,6 @@ package com.everyfind.member;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,21 +11,20 @@ import org.springframework.web.server.ResponseStatusException;
 public class MemberController {
     private final MemberService memberService;
 
-    @Autowired
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
 
-    // 회원가입
+    // 회원가입 요청
     @PostMapping("/members")
-    public MemberResponseDto SignUp(@RequestBody MemberRequestDto requestDto) {
+    public MemberResponseDto signUp(@RequestBody MemberRequestDto requestDto) {
         Member member = memberService.createMember(requestDto);
         return new MemberResponseDto(member);
     }
 
     // 로그인
     @PostMapping("/login")
-    public Member login(@RequestBody LoginRequestDto requestDto) {
+    public MemberResponseDto login(@RequestBody LoginRequestDto requestDto) {
         return memberService.login(requestDto);
     }
 
