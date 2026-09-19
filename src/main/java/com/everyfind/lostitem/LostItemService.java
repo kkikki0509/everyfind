@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class LostItemService {
@@ -25,17 +24,10 @@ public class LostItemService {
         this.matchService = matchService;
     }
 
-    // 분실물 게시물 생성
+    /* 분실물 게시물 생성 */
     public LostItemMatchResponseDto createLostItem(LostItemRequestDto requestDto, String email) {
-        Optional<Member> optMember = memberRepository.findByEmail(email);
-        Member member = null;
-
-        try{
-            member = optMember.get();
-        }
-        catch(NoSuchElementException e){
-            throw new NoSuchElementException("존재하지 않는 회원입니다.");
-        }
+        Member member = memberRepository.findByEmail(email).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 회원입니다."));
 
         LostItem lostItem = new LostItem(
                 requestDto.getTitle(),
@@ -46,65 +38,66 @@ public class LostItemService {
                 member
         );
 
+        // DB에 저장
         LostItem savedLostItem = lostItemRepository.save(lostItem);
 
+        // 후보 3개
         List<MatchResult> matches = matchService.findMatches(savedLostItem.getId());
 
         return new LostItemMatchResponseDto(savedLostItem, matches);
     }
 
-    // 분실물 전체 조회
+    /* 분실물 전체 조회 */
     public List<LostItem> getLostItems(String email){
-        Optional<Member> optMember = memberRepository.findByEmail(email);
-        Member member = null;
+        Member member = memberRepository.findByEmail(email).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 회원입니다."));
 
-        try{
-            member = optMember.get();
-        }
-        catch(NoSuchElementException e){
-            throw new NoSuchElementException("존재하지 않는 회원입니다.");
-        }
-
+        // 회원의 학교 pk
         Long schoolId = member.getSchool().getId();
 
+        // 해당 학교의 분실물
         return lostItemRepository.findByMemberSchoolId(schoolId);
     }
 
-    // 분실물 매칭 후보 조회
-    public List<MatchResult> getMatches(Long lostId) {
-        return matchService.findMatches(lostId);
-    }
-
+    /* 분실물 찾았을 때 */
     public void confirmMatch(Long lostId, Long foundId) {
         matchService.confirmMatch(lostId, foundId);
     }
 
-    // 분실물 내용 수정
-    public LostItem updateLostItem(Long lostId, String email, LostItemRequestDto requestDto) {
-        Optional<LostItem> optlostItem = lostItemRepository.findById(lostId);
-        LostItem lostItem= null;
+    /* 분실물 단건 조회 */
+    public LostItemMatchResponseDto getLostItem(Long lostId, String email) {
+        LostItem lostItem = lostItemRepository.findById(lostId).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 분실물입니다."));
 
-        try{
-            lostItem = optlostItem.get();
-        }
-        catch(NoSuchElementException e){
-            throw new NoSuchElementException("존재하지 않는 분실물입니다.");
-        }
+        Member member = memberRepository.findByEmail(email).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 회원입니다."));
 
-        Optional<Member> optMember = memberRepository.findByEmail(email);
-        Member member = null;
-
-        try {
-            member = optMember.get();
-        }
-        catch (NoSuchElementException e) {
-            throw new NoSuchElementException("존재하지 않는 회원입니다.");
+        // 접근 제어
+        if (!lostItem.getMember().getSchool().getId().equals(member.getSchool().getId())) {
+            throw new IllegalArgumentException("같은 학교의 분실물만 조회할 수 있습니다.");
         }
 
+        // 후보 3개
+        List<MatchResult> matches = matchService.findMatches(lostId);
+
+        return new LostItemMatchResponseDto(lostItem, matches);
+    }
+
+    /* 분실물 내용 수정 */
+    public void updateLostItem(Long lostId, String email, LostItemRequestDto requestDto) {
+
+        LostItem lostItem = lostItemRepository.findById(lostId).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 분실물입니다."));
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 회원입니다."));
+
+        // 접근 제어
         if (!lostItem.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("자신이 등록한 게시물만 수정할 수 있습니다.");
         }
 
+        // 엔티티 속성값 수정
         lostItem.updateLostItem(
                 requestDto.getTitle(),
                 requestDto.getCategory(),
@@ -113,68 +106,24 @@ public class LostItemService {
                 requestDto.getLostDate()
         );
 
-        return lostItemRepository.save(lostItem);
+        lostItemRepository.save(lostItem);
     }
 
-    // 분실물 단건 조회
-    public LostItemMatchResponseDto getLostItem(Long lostId, String email) {
-        Optional<LostItem> optLostItem = lostItemRepository.findById(lostId);
-        LostItem lostItem = null;
-
-        try {
-            lostItem = optLostItem.get();
-        }
-        catch (NoSuchElementException e) {
-            throw new NoSuchElementException("존재하지 않는 분실물입니다.");
-        }
-
-        Optional<Member> optMember = memberRepository.findByEmail(email);
-        Member member = null;
-
-        try {
-            member = optMember.get();
-        }
-        catch (NoSuchElementException e) {
-            throw new NoSuchElementException("존재하지 않는 회원입니다.");
-        }
-
-        if (!lostItem.getMember().getSchool().getId().equals(member.getSchool().getId())) {
-            throw new IllegalArgumentException("같은 학교의 분실물만 조회할 수 있습니다.");
-        }
-
-        List<MatchResult> matches = matchService.findMatches(lostId);
-
-        return new LostItemMatchResponseDto(lostItem, matches);
-    }
-
-    // 분실물 삭제
+    /* 분실물 삭제 */
     public void deleteLostItem(Long lostId, String email) {
-        Optional<LostItem> optLostItem = lostItemRepository.findById(lostId);
-        LostItem lostItem = null;
+        LostItem lostItem = lostItemRepository.findById(lostId).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 분실물입니다."));
 
-        try {
-            lostItem = optLostItem.get();
-        }
-        catch (NoSuchElementException e) {
-            throw new NoSuchElementException("존재하지 않는 분실물입니다.");
-        }
+        Member member = memberRepository.findByEmail(email).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 회원입니다."));
 
-        Optional<Member> optMember = memberRepository.findByEmail(email);
-        Member member = null;
-
-        try {
-            member = optMember.get();
-        }
-        catch (NoSuchElementException e) {
-            throw new NoSuchElementException("존재하지 않는 회원입니다.");
-        }
-
+        // 접근 제어
         if (!lostItem.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("자신이 등록한 게시물만 삭제할 수 있습니다.");
         }
 
+        // 삭제
         lostItemRepository.delete(lostItem);
-        System.out.println(lostId + " 번 게시물이 삭제되었습니다.");
     }
 
 }

@@ -28,10 +28,10 @@ public class LostItemController {
     }
 
     @PutMapping("/lost/items/{lostId}")
-    public LostItem updateLostItem(@PathVariable Long lostId, @RequestBody LostItemRequestDto requestDto,
+    public void updateLostItem(@PathVariable Long lostId, @RequestBody LostItemRequestDto requestDto,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        return lostItemService.updateLostItem(lostId, userDetails.getUsername(), requestDto);
+        lostItemService.updateLostItem(lostId, userDetails.getUsername(), requestDto);
     }
 
     @GetMapping("/lost/items/{lostId}")

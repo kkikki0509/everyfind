@@ -86,7 +86,7 @@ public class LostItem {
         return member;
     }
 
-    // 수정
+    // 수정할 때
     public void updateLostItem(String title, String category, String lostPlace,
                        String feature, LocalDate lostDate) {
         this.title = title;
@@ -96,6 +96,7 @@ public class LostItem {
         this.lostDate = lostDate;
     }
 
+    // 찾았을 때
     public void markAsFound() {
         this.currentStatus = "FOUND";
     }

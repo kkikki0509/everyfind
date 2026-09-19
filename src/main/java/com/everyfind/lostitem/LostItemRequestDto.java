@@ -18,15 +18,9 @@ public class LostItemRequestDto {
         return category;
     }
 
-    public String getLostPlace() {
-        return lostPlace;
-    }
+    public String getLostPlace() { return lostPlace; }
 
-    public String getFeature() {
-        return feature;
-    }
+    public String getFeature() { return feature; }
 
-    public LocalDate getLostDate() {
-        return lostDate;
-    }
+    public LocalDate getLostDate() { return lostDate; }
 }
