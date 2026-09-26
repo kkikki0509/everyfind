@@ -10,43 +10,43 @@ import java.util.List;
 public class LostItemController {
     private final LostItemService lostItemService;
 
-    @Autowired
     public LostItemController(LostItemService lostItemService){
         this.lostItemService = lostItemService;
     }
 
-    @PostMapping("/lost/items")
+    @PostMapping("/lost/items") // 분실물 게시물 생성
     public LostItemMatchResponseDto createLostItem(@RequestBody LostItemRequestDto requestDto,
                                    @AuthenticationPrincipal UserDetails userDetails) {
         return lostItemService.createLostItem(requestDto, userDetails.getUsername());
     }
 
-    @GetMapping("/lost/items")
-    public List<LostItem> getLostItems(@AuthenticationPrincipal UserDetails userDetails) {
+    @GetMapping("/lost/items") // 전체 분실물 게시물 조회
+    public List<LostItemResponseDto> getLostItems(@AuthenticationPrincipal UserDetails userDetails) {
 
         return lostItemService.getLostItems(userDetails.getUsername());
     }
 
-    @PutMapping("/lost/items/{lostId}")
+    @GetMapping("/lost/items/{lostId}") // 단건 분실물 게시물 조회
+    public LostItemMatchResponseDto getLostItem(@PathVariable Long lostId, @AuthenticationPrincipal UserDetails userDetails) {
+        return lostItemService.getLostItem(lostId, userDetails.getUsername());
+    }
+
+    @PutMapping("/lost/items/{lostId}") // 게시물 수정
     public void updateLostItem(@PathVariable Long lostId, @RequestBody LostItemRequestDto requestDto,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         lostItemService.updateLostItem(lostId, userDetails.getUsername(), requestDto);
     }
 
-    @GetMapping("/lost/items/{lostId}")
-    public LostItemMatchResponseDto getLostItem(@PathVariable Long lostId, @AuthenticationPrincipal UserDetails userDetails) {
-        return lostItemService.getLostItem(lostId, userDetails.getUsername());
-    }
-
-    @DeleteMapping("/lost/items/{lostId}")
+    @DeleteMapping("/lost/items/{lostId}") // 게시물 삭제
     public void deleteLostItem(@PathVariable Long lostId, @AuthenticationPrincipal UserDetails userDetails) {
         lostItemService.deleteLostItem(lostId, userDetails.getUsername());
     }
 
-    @PostMapping("/lost/items/{lostId}/matches/{foundId}")
-    public void confirmMatch(@PathVariable Long lostId, @PathVariable Long foundId) {
-        lostItemService.confirmMatch(lostId, foundId);
+    @PostMapping("/lost/items/{lostId}/matches/{foundId}") // 분실물 찾았을 때
+    public void confirmMatch(@PathVariable Long lostId, @PathVariable Long foundId,
+                             @AuthenticationPrincipal UserDetails userDetails) {
+        lostItemService.confirmMatch(lostId, foundId, userDetails.getUsername());
     }
 
 }

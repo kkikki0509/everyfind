@@ -48,7 +48,7 @@ public class LostItemService {
     }
 
     /* 분실물 전체 조회 */
-    public List<LostItem> getLostItems(String email){
+    public List<LostItemResponseDto> getLostItems(String email){
         Member member = memberRepository.findByEmail(email).orElseThrow(() ->
                 new NoSuchElementException("존재하지 않는 회원입니다."));
 
@@ -56,11 +56,25 @@ public class LostItemService {
         Long schoolId = member.getSchool().getId();
 
         // 해당 학교의 분실물
-        return lostItemRepository.findByMemberSchoolId(schoolId);
+        return lostItemRepository.findByMemberSchoolId(schoolId)
+                .stream()
+                .map(LostItemResponseDto::new)
+                .toList();
     }
 
     /* 분실물 찾았을 때 */
-    public void confirmMatch(Long lostId, Long foundId) {
+    public void confirmMatch(Long lostId, Long foundId, String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 회원입니다."));
+
+        LostItem lostItem = lostItemRepository.findById(lostId).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 분실물입니다."));
+
+        // 접근 제어
+        if (!lostItem.getMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("자신의 분실물만 매칭 확정할 수 있습니다.");
+        }
+
         matchService.confirmMatch(lostId, foundId);
     }
 
