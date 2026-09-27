@@ -36,8 +36,7 @@ public class FoundItem {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    protected FoundItem() {
-    }
+    protected FoundItem() { }
 
     protected FoundItem(String title, String category, String foundPlace, String feature,
                         LocalDate foundDate, Member member) {
@@ -69,9 +68,7 @@ public class FoundItem {
         return foundDate;
     }
 
-    public String getFeature() {
-        return feature;
-    }
+    public String getFeature() { return feature; }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
