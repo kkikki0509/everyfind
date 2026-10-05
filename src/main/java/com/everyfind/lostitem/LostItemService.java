@@ -75,7 +75,7 @@ public class LostItemService {
             throw new IllegalArgumentException("자신의 분실물만 매칭 확정할 수 있습니다.");
         }
 
-        matchService.confirmMatch(lostId, foundId);
+        matchService.confirmMatch(lostId);
     }
 
     /* 분실물 단건 조회 */
