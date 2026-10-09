@@ -3,73 +3,81 @@
 
 <body>
 
-<h1>회원가입</h1>
+    <h1>회원가입</h1>
 
-<!-- 회원가입 정보 -->
-<input id="name" placeholder="이름">
-<input id="email" type="email" placeholder="학교 이메일">
-<input id="password" type="password" placeholder="비밀번호">
+    <h3>사용자 인증</h3>
+    <input id="email" type="email" placeholder="학교 이메일">
+    <input id="code" placeholder="인증번호">
+    <button id="sendCode">인증번호 요청</button>
+    <button id="verifyCode">인증 확인</button>
 
-<br><br>
+    <br/>
 
-<!-- 이메일 인증 -->
-<button id="sendCode">인증번호 요청</button>
+    <h3>입력 정보</h3>
+    <input id="name" placeholder="이름">
+    <input id="password" type="password" placeholder="비밀번호">
+    <button id="register" disabled>회원가입</button>
 
-<br><br>
+    <input type="hidden" id="csrf" th:value="${_csrf.token}">
 
-<input id="code" placeholder="인증번호">
-<button id="verifyCode">인증 확인</button>
+    <script>
+        /* 인증번호 요청 */
+        document.getElementById("sendCode").addEventListener("click", async function() {
+            const email = document.getElementById("email").value;
 
-<input type="hidden" id="csrf" th:value="${_csrf.token}">
+            const response = await fetch("/members/email", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.getElementById("csrf").value
+                },
+                body: JSON.stringify({
+                    email: email
+                })
+            });
 
-<script>
-    // 인증번호 요청
-    document.getElementById("sendCode").addEventListener("click", async function() {
+            if (response.ok) {
+                alert("인증번호가 발송되었습니다.");
+            } else {
+                alert("인증번호 발송 실패: " + response.status);
+            }
 
-        const email = document.getElementById("email").value;
-
-        const response = await fetch("/members/email", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.getElementById("csrf").value
-            },
-            body: JSON.stringify({
-                email: email
-            })
         });
 
-        if (response.ok) {
-            alert("인증번호가 발송되었습니다.");
-        } else {
-            alert("인증번호 발송 실패: " + response.status);
-        }
+        /* 인증번호 확인 */
+        document.getElementById("verifyCode").addEventListener("click", async function() {
+            const email = document.getElementById("email");
+            const code = document.getElementById("code").value;
 
-    });
+            const response = await fetch("/members/email/verify", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.getElementById("csrf").value
+                },
+                body: JSON.stringify({
+                    email: email.value,
+                    code: code
+                })
+            });
 
-    // 인증번호 확인
-    document.getElementById("verifyCode").addEventListener("click", async function() {
+            if (response.ok && await response.json()) { // 인증 확인 시
+                const registerBtn = document.getElementById('register');
+                email.readOnly = true; // 이메일(id) 읽기 전용
+                registerBtn.disabled = false; // 회원가입 버튼 사용
 
-        const email = document.getElementById("email").value;
-        const code = document.getElementById("code").value;
+                alert("인증 성공!");
+            }
+            else {
+                alert("인증번호가 올바르지 않습니다.");
+            }
 
-        const response = await fetch("/members/email/verify", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.getElementById("csrf").value
-            },
-            body: JSON.stringify({
-                email: email,
-                code: code
-            })
         });
 
-        if (response.ok) {
-            alert("이메일 인증 성공!");
+        /* 회원 가입 */
+        document.getElementById("register").addEventListener("click", async function() {
 
-            // 회원가입 요청
-            const signupResponse = await fetch("/members", {
+            const response = await fetch("/members", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -77,28 +85,21 @@
                 },
                 body: JSON.stringify({
                     name: document.getElementById("name").value,
-                    email: email,
+                    email: document.getElementById("email").value,
                     password: document.getElementById("password").value
                 })
             });
 
-            if (signupResponse.ok) {
+            if (response.ok) {
                 alert("회원가입 성공!");
                 location.href = "/members/login";
             }
             else {
-                const error = await signupResponse.text();
-                console.log(error);
-                alert("회원가입 실패: " + signupResponse.status);
+                alert("회원가입 실패: " + response.status);
             }
-        }
-        else {
-            alert("인증번호가 틀렸습니다.");
-        }
+        });
 
-    });
-
-</script>
+    </script>
 
 </body>
 </html>

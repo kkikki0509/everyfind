@@ -27,6 +27,11 @@ public class MemberService {
         String email = requestDto.getEmail();
         String domain = email.substring(email.indexOf("@") + 1);
 
+        // 이메일 인증 여부(변조 방지)
+        if (!emailService.isEmailVerified(email)) {
+            throw new IllegalArgumentException("이메일 인증을 완료 먼저 완료해주세요.");
+        }
+
         // 도메인 유무 검사
         School school = schoolRepository.findByDomain(domain).orElseThrow(() ->
                 new NoSuchElementException("해당 학교 도메인을 찾을 수 없습니다."));
@@ -41,6 +46,9 @@ public class MemberService {
 
         // 회원 생성
         Member member = new Member(requestDto.getName(), requestDto.getEmail(), encodedPassword, school);
+
+        // 인증된 이메일 삭제
+        emailService.removeVerifiedEmail(email);
 
         // DB 저장
         return memberRepository.save(member);

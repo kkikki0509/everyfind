@@ -4,7 +4,6 @@ public class EmailVerificationRequestDto {
     private String email;
     private String code;
 
-
     public String getEmail() {
         return email;
     }

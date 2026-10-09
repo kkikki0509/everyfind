@@ -3,11 +3,14 @@ package com.everyfind.email;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class EmailService {
     private final Map<String, String> verificationCodes = new HashMap<>();
+    private final Set<String> verifiedEmails = new HashSet<>();
 
     // 이메일 대한 인증번호를 임시 저장
     public void sendVerificationEmail(String email, String code) {
@@ -31,6 +34,18 @@ public class EmailService {
         }
 
         verificationCodes.remove(email);
+        verifiedEmails.add(email);
+
         return true;
+    }
+
+    // 이메일 인증 여부
+    public boolean isEmailVerified(String email) {
+        return verifiedEmails.contains(email);
+    }
+
+    // 이메일 인증 후 삭제
+    public void removeVerifiedEmail(String email) {
+        verifiedEmails.remove(email);
     }
 }
